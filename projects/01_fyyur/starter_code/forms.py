@@ -37,6 +37,7 @@ class ShowForm(Form):
     venue_id = StringField(
         'venue_id', validators=[DataRequired()]
     )
+    # Adding Name of Show 
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -149,7 +150,8 @@ class VenueForm(Form):
     )
     website = StringField(
         'website', validators=[URL()]
-    )   
+    )  
+    # Using Boolen Fields for the seeking talent
     seeking_talent =BooleanField(
         'seeking_talent', default="checked"
     )
@@ -257,13 +259,17 @@ class ArtistForm(Form):
         #     ('Other', 'Other'),
         # ]
     )
+    # using URL validators for the facebook field
     facebook_link = StringField(
         # TODO implement enum restriction
         'facebook_link', validators=[URL()]
     )
+    # using URL validators for the webiste field
+
     website = StringField(
         'website', validators=[URL()]
     )   
+    # using boolean field for the seeking venue field
     seeking_venue =BooleanField(
         'seeking_venue', default="checked"
     )

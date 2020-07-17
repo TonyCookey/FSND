@@ -818,7 +818,7 @@ def create_show_submission():
       show = Show(name=name,artist_id=artist_id, venue_id=venue_id, date=date)
       db.session.add(show)
       db.session.commit()
-      flash('Show was successfully listed!')    
+      flash(name + ' show was successfully listed!')    
   except:
     db.rollback()
     print(sys.exc_info())     

@@ -643,7 +643,7 @@ def edit_venue_submission(venue_id):
     venue.phone = request.form['phone']
     venue.genres = request.form.getlist('genres')
     venue.facebook_link = request.form['facebook_link']
-    check if user checked the seeking_talent checkbox
+    # check if user checked the seeking_talent checkbox
     if 'seeking_talent' in request.form:
       venue.seeking_talent = (request.form['seeking_talent']=='y')
     else:

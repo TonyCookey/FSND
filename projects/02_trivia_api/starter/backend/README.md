@@ -90,6 +90,7 @@ GET '/categories'
 '5' : "Entertainment",
 '6' : "Sports"}
 
+
 GET '/questions'
 - Fetches a dictionary of Question and Categories
 - Request Arguments: page which is an integer i.e url?page=1
@@ -151,6 +152,7 @@ POST '/questions'
 
 POST '/questions/search'
 - Search for questions using a search term in the request body
+- Request Arguments: page which is an integer i.e url?page=1 used for pagination
 - Request JSON:
 --search_term: String
 - Returns: an object of several values listed below
@@ -170,13 +172,16 @@ POST '/questions/search'
     }
   ],
   "success": true,
+  "search_term": "old"
   "totalQuestions": 1
 }
 
 GET '/categories/<int:category_id>/questions'
 - Returns questions in a particular category
-- Request Argument: <int:category_id> i.e /categories/1/questions
---search_term: String
+-Route Paramenter
+--<int:category_id> i.e /categories/1/questions
+- Request Argument:
+--- page which is an integer i.e url?page=1
 - Returns:
 --An array of questions (with the category, difficulty and answers) that are in the requested category(category = 1).
 --and success set to true
@@ -204,6 +209,28 @@ GET '/categories/<int:category_id>/questions'
       "question": "The Taj Mahal is located in which Indian city?"
     }
   ],
+  "success": true,
+  "current_category": 4,
+  "total_questions": 5
+
+
+}
+
+POST '/quizzes'
+- Returns a question for the user to answer. This endpoint can be severally to keep returnig questions based on the request object
+- Request JSON
+--previous_questions - Array/List - This array should have previously answered. if empty, API would return a fresh question since there are no previously answered questions. If not empty, API will check the array/list and not return questions already answered i.e [12,5,19]
+--category - Object/Dict - This objet contains category type and category ID  i.e {'type': "Geography", 'id': "3"}
+  {previous_questions: [], quiz_category: {type: "Geography", id: "3"}}
+- Returns:
+{
+  "question": {
+    "answer": "Agra",
+    "category": 3,
+    "difficulty": 2,
+    "id": 15,
+    "question": "The Taj Mahal is located in which Indian city?"
+  },
   "success": true
 }
 

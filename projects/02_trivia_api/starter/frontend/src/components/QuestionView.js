@@ -14,7 +14,7 @@ class QuestionView extends Component {
       totalQuestions: 0,
       categories: {},
       currentCategory: null,
-      searchStatus: false,
+      searchTerm: null,
     }
   }
 
@@ -32,6 +32,7 @@ class QuestionView extends Component {
           totalQuestions: result.total_questions,
           categories: result.categories,
           currentCategory: result.current_category,
+          searchTerm: null,
         })
         return
       },
@@ -43,7 +44,15 @@ class QuestionView extends Component {
   }
 
   selectPage(num) {
-    this.setState({ page: num }, () => this.getQuestions())
+    this.setState({ page: num }, () => {
+      if (this.state.currentCategory) {
+        this.getByCategory(this.state.currentCategory, this.state.page)
+      } else if (this.state.searchTerm) {
+        this.submitSearch(this.state.searchTerm, this.state.page)
+      } else {
+        this.getQuestions()
+      }
+    })
   }
 
   createPagination() {
@@ -65,15 +74,19 @@ class QuestionView extends Component {
     return pageNumbers
   }
 
-  getByCategory = (id) => {
+  getByCategory = (id, page) => {
+    if (page == 1) {
+      this.state.page = 1
+    }
     $.ajax({
-      url: `/categories/${id}/questions`, //TODO: update request URL
+      url: `/categories/${id}/questions?page=${page}`, //TODO: update request URL
       type: "GET",
       success: (result) => {
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
+          searchTerm: null,
         })
         return
       },
@@ -84,9 +97,9 @@ class QuestionView extends Component {
     })
   }
 
-  submitSearch = (searchTerm) => {
+  submitSearch = (searchTerm, page) => {
     $.ajax({
-      url: `/questions/search`, //TODO: update request URL
+      url: `/questions/search?page=${page}`, //TODO: update request URL
       type: "POST",
       dataType: "json",
       contentType: "application/json",
@@ -102,6 +115,7 @@ class QuestionView extends Component {
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
+          searchTerm: result.search_term,
         })
         return
       },
@@ -146,7 +160,7 @@ class QuestionView extends Component {
               <li
                 key={id}
                 onClick={() => {
-                  this.getByCategory(id)
+                  this.getByCategory(id, 1)
                 }}
               >
                 {this.state.categories[id]}

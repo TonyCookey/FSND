@@ -166,18 +166,20 @@ def create_app(test_config=None):
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
     try:
+      current_page = request.args.get('page',1, type=int)
       search_term = request.get_json()['search_term']
       if search_term is None:
         abort(404,description='No searchTerm in the request body')
       # get all questions that match the search term
       questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
-      paginated_questions = paginate_question(1, questions)
+      paginated_questions = paginate_question(current_page, questions)
       # print(search_questions)
       return jsonify({
         'success': True,
-        'totalQuestions': len(paginated_questions),
+        'total_questions': len(questions),
         'questions': paginated_questions,
-        'currentCategory': None
+        'current_category': None,
+        'search_term' : search_term
       })
     except:
       abort(422, description='Could not process question search')
@@ -193,12 +195,15 @@ def create_app(test_config=None):
   '''
   @app.route('/categories/<int:category_id>/questions')
   def get_questions_by_category(category_id):
-    try:      
+    try:
+      current_page = request.args.get('page',1, type=int)
       questions = Question.query.filter_by(category=category_id).all()
-      paginated_questions = paginate_question(1, questions)
+      paginated_questions = paginate_question(current_page, questions)      
       return jsonify({
         'success':True,
-        'questions':paginated_questions
+        'questions':paginated_questions,
+        'total_questions': len(questions),
+        'current_category': category_id
       })
     except:
       abort(422)

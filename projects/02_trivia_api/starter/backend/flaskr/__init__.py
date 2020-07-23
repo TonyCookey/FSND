@@ -114,7 +114,8 @@ def create_app(test_config=None):
   @TODO:
   Create an endpoint to DELETE question using a question ID.
 
-  TEST: When you click the trash icon next to a question, the question will be removed.
+  TEST: When you click the trash icon next to a question,
+  the question will be removed.
   This removal will persist in the database and when you refresh the page.
   '''
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
@@ -124,7 +125,7 @@ def create_app(test_config=None):
             # check if question is None and return appropiate error
             if question is None:
                 abort(
-                    404, description='Invalid Question ID. Could not find requested question')
+                    404, description='Invalid Question ID')
             question.delete()
             return jsonify({
                 'success': True,
@@ -165,7 +166,7 @@ def create_app(test_config=None):
         except BaseException:
             abort(
                 422,
-                description='Could not Create Question. Please confirm you sent a proper and complete JSON request with all fields')
+                description='Could not Create Question.')
 
     '''
   @TODO:
@@ -245,11 +246,11 @@ def create_app(test_config=None):
         if category is None:
             abort(
                 403,
-                description='category field is null, please pass a category object in the request body')
+                description='category field is Null/None')
         if previous_questions is None:
             abort(
                 403,
-                description='previous_question field is null, please pass a prevoius_questions array in the request body')
+                description='previous_question field is Null/None')
 
         # Check if the previous questions arry is empty. if empty it means, the
         # user is jsut starting the quiz and API needs to return a fresh
@@ -267,7 +268,7 @@ def create_app(test_config=None):
                 question = Question.query.order_by(func.random()).first()
             else:
                 abort(
-                    404, description='Inavlid Category ID. Please use a valid category ID')
+                    404, description='Inavlid Category ID')
         # API needs to check the prvious questions array and make sure we dont
         # return a question already sent to the user/client
         else:
@@ -294,7 +295,7 @@ def create_app(test_config=None):
                     })
             else:
                 abort(
-                    404, description='Inavlid Category ID. Please use a valid category ID')
+                    404, description='Inavlid Category ID')
 
         return jsonify({
             'success': True,
@@ -313,7 +314,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 404,
-            'message': error.description if error.description else 'Resource Not Found'
+            'message': error.description
 
         }), 404
 
@@ -322,7 +323,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 422,
-            "message": error.description if error.description else 'unprocessable'
+            "message": error.description
         }), 422
 
     @app.errorhandler(400)
@@ -330,7 +331,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 400,
-            "message": error.description if error.description else 'Bad Request'
+            "message": error.description
         }), 400
 
     @app.errorhandler(403)
@@ -338,7 +339,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 403,
-            "message": error.description if error.description else 'Forbidden'
+            "message": error.description
         }), 403
 
     @app.errorhandler(500)
@@ -346,7 +347,7 @@ def create_app(test_config=None):
         return jsonify({
             "success": False,
             "error": 500,
-            "message": error.description if error.description else 'Internal Serve Error'
+            "message": error.description
         }), 500
 
     return app

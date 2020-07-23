@@ -61,11 +61,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual((data['questions']), [])
 
     # use valid question id to test else test will fail
-    # def test_delete_question(self):
-    #     res = self.client().delete('/questions/15')
-    #     data = json.loads(res.data)
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertEqual(data['success'], True)
+    def test_delete_question(self):
+        res = self.client().delete('/questions/15')
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
 
     def test_404_delete_question_with_invalid_question_id(self):
         res = self.client().delete('/questions/1000')

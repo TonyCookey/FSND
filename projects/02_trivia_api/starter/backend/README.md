@@ -130,7 +130,8 @@ DELETE '/questions'
 - Request Arguments: Question ID, the question ID should be appended to the Requested URL i.e url/questions/question_id
 - Returns: A object with success set to true indicating the question has been deleted.
 {
-  'success': True
+  'success': True,
+  'question_id':5
   }
 
 

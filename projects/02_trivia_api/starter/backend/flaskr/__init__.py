@@ -51,9 +51,12 @@ def create_app(test_config=None):
   def get_all_categories():
     try:
       data = {}
+      # fetch all categories in the DB
       categories = Category.query.all()
+      # Check if there is any existing category
       if len(categories) == 0:
         abort(404, description='No category has been created yet')
+      # format each category by iterating through all suing the format() on the Model into the appropiate object structure
       for category in categories:
         data[category.id] = category.type
         
@@ -87,6 +90,7 @@ def create_app(test_config=None):
       # get categories
       data = {}
       categories = Category.query.all()
+      # Format each category by iterating through all suing the format() on the Model into the appropiate object structure
       for category in categories:
           data[category.id] = category.type
 
@@ -111,6 +115,7 @@ def create_app(test_config=None):
   def delete_question(question_id):
     try:
       question = Question.query.get(question_id)
+      # check if question is None and return appropiate error
       if question is None:
         abort(404, description='Invalid Question ID. Could not find requested question')
       question.delete()
@@ -134,6 +139,7 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['POST'])
   def create_question():
     try:
+      # get the request fields 
       question = request.get_json()['question']
       answer = request.get_json()['answer']
       difficulty = request.get_json()['difficulty']
@@ -170,10 +176,10 @@ def create_app(test_config=None):
       search_term = request.get_json()['search_term']
       if search_term is None:
         abort(404,description='No searchTerm in the request body')
-      # get all questions that match the search term
+      # get all questions that match the search term - insensitive search
       questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+      # pageinate search result using the paginate helper method
       paginated_questions = paginate_question(current_page, questions)
-      # print(search_questions)
       return jsonify({
         'success': True,
         'total_questions': len(questions),
@@ -197,7 +203,9 @@ def create_app(test_config=None):
   def get_questions_by_category(category_id):
     try:
       current_page = request.args.get('page',1, type=int)
+      # get questions that belong to the requested category
       questions = Question.query.filter_by(category=category_id).all()
+      # paginate questions for the client
       paginated_questions = paginate_question(current_page, questions)      
       return jsonify({
         'success':True,
@@ -223,24 +231,29 @@ def create_app(test_config=None):
   def play_quizzes():
     json_body = request.get_json()
     previous_questions = json_body['previous_questions']
-    category = json_body['quiz_category']    
+    category = json_body['quiz_category']
+    # check if any of the required request fields is None and return appropiate error if yes    
     if category is None:
       abort(403, description='category field is null, please pass a category object in the request body')
     if previous_questions is None:
       abort(403, description='previous_question field is null, please pass a prevoius_questions array in the request body')
       
+    # Check if the previous questions arry is empty. if empty it means, the user is jsut starting the quiz and API needs to return a fresh question
     if previous_questions == []:
       question_category = category['id']
       category_check = Category.query.get(question_category)
+      # Check if category exists or category is equal to zero(0) which signifies all question regardless of the categories
       if category_check:
         question = Question.query.filter_by(category=question_category).order_by(func.random()).first()
       elif question_category == 0:
         question = Question.query.order_by(func.random()).first()        
       else:
         abort(404, description='Inavlid Category ID. Please use a valid category ID')
+    # API needs to check the prvious questions array and make sure we dont return a question already sent to the user/client
     else:
       question_category = category['id']
       category_check = Category.query.get(question_category)
+      # Check if category exists or category is equal to zero(0) which signifies all question regardless of the categories
       if category_check:
         question = Question.query.filter_by(category=question_category).filter(~Question.id.in_(previous_questions)).order_by(func.random()).first()
         if question is None:
@@ -264,13 +277,12 @@ def create_app(test_config=None):
     })
 
 
-
-
   '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+  # Define all error handlers and using description gotten from abort statements
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({

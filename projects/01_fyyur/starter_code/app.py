@@ -191,7 +191,7 @@ def search_venues():
   # Get the search term using request.form.get
   search_term = request.form.get('search_term', '')
   # Using ilike for insensitive name search
-  search = Venue.query.filter(Venue.name.ilike('%{}%'.format(search_term)))
+  search = Venue.query.filter(Venue.format().name.ilike('%{}%'.format(search_term)))
   data = search.all()
   # Calculating count for search items
   count = search.count()

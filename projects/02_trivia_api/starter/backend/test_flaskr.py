@@ -85,38 +85,38 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
     
-    def test_403_create_question_without_question(self):
+    def test_422_create_question_without_question(self):
         res = self.client().post('/questions', json={'answer':22, 'category' : 4, 'difficulty':5 })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
 
-    def test_403_create_question_without_answer(self):
+    def test_422_create_question_without_answer(self):
         res = self.client().post('/questions', json={'question':'How old is Tony Cookey', 'category' : 4, 'difficulty':5 })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
 
-    def test_403_create_question_without_category(self):
+    def test_422_create_question_without_category(self):
         res = self.client().post('/questions', json={'question':'How old is Tony Cookey','answer':22,  'difficulty':5 })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
 
-    def test_403_create_question_without_difficulty(self):
+    def test_422_create_question_without_difficulty(self):
         res = self.client().post('/questions', json={'question':'How old is Tony Cookey','answer':22, 'category' : 4  })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False) 
 
     def test_search_questions(self):
-        res = self.client().post('/questions/search', json={'searchTerm':'auto' })
+        res = self.client().post('/questions/search', json={'search_term':'a' })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['questions'])
     
-    def test_403_search_question_without_search_term(self):
+    def test_422_search_question_without_search_term(self):
         res = self.client().post('/questions/search')
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
@@ -129,7 +129,34 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         # self.assertEqual(data['current_category'],None)
         # self.assertTrue(data['total_questions'])
-        self.assertEqual((data['questions']), [])
+        self.assertTrue((data['questions']))
+
+    def test_start_play_quiz(self):
+        res = self.client().post('/quizzes', json={'previous_questions': [], 'quiz_category': {'type': "Geography", 'id': "3"}})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question'])
+    
+    # def test_422_play_quiz_with_invalid_category(self):
+    #     res = self.client().post('/quizzes')
+    #     data = json.loads(res.data)
+    #     self.assertEqual(res.status_code, 422)
+    #     self.assertEqual(data['success'], False)
+
+    def test_403_play_quiz_with_null_category(self):
+        res = self.client().post('/quizzes' , json={'previous_questions': [], 'quiz_category': None})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['success'], False)
+
+    def test_403_play_quiz_with_null_previous_questions(self):
+        res = self.client().post('/quizzes' , json={'previous_questions': None, 'quiz_category': {'type': "Geography", 'id': "3"}})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['success'], False)
+
+    
 
         
 

@@ -14,6 +14,7 @@ class QuestionView extends Component {
       totalQuestions: 0,
       categories: {},
       currentCategory: null,
+      searchStatus: false,
     }
   }
 
@@ -91,7 +92,6 @@ class QuestionView extends Component {
       contentType: "application/json",
       data: JSON.stringify({
         search_term: searchTerm,
-        search: true,
       }),
       xhrFields: {
         withCredentials: true,

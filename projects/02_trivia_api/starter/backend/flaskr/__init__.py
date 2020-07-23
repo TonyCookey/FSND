@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from  sqlalchemy.sql.expression import func
 from flask_cors import CORS
 import random
 import sys
@@ -192,20 +193,15 @@ def create_app(test_config=None):
   '''
   @app.route('/categories/<int:category_id>/questions')
   def get_questions_by_category(category_id):
-    # try:      
-    questions = Question.query.filter_by(category=category_id).all()
-    paginated_questions = paginate_question(1, questions)
-    return jsonify({
-      'success':True,
-      'questions':paginated_questions
-    })
-    # except:
-    #   abort(422)
-
-
-
-
-
+    try:      
+      questions = Question.query.filter_by(category=category_id).all()
+      paginated_questions = paginate_question(1, questions)
+      return jsonify({
+        'success':True,
+        'questions':paginated_questions
+      })
+    except:
+      abort(422)
 
   '''
   @TODO: 
@@ -218,6 +214,52 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def play_quizzes():
+    json_body = request.get_json()
+    previous_questions = json_body['previous_questions']
+    category = json_body['quiz_category']    
+    if category is None:
+      abort(403, description='category field is null, please pass a category object in the request body')
+    if previous_questions is None:
+      abort(403, description='previous_question field is null, please pass a prevoius_questions array in the request body')
+      
+    if previous_questions == []:
+      question_category = category['id']
+      category_check = Category.query.get(question_category)
+      if category_check:
+        question = Question.query.filter_by(category=question_category).order_by(func.random()).first()
+      elif question_category == 0:
+        question = Question.query.order_by(func.random()).first()        
+      else:
+        abort(404, description='Inavlid Category ID. Please use a valid category ID')
+    else:
+      question_category = category['id']
+      category_check = Category.query.get(question_category)
+      if category_check:
+        question = Question.query.filter_by(category=question_category).filter(~Question.id.in_(previous_questions)).order_by(func.random()).first()
+        if question is None:
+          return jsonify({
+            'success': True,
+            'questions': []
+          })
+      elif question_category == 0:
+        question = Question.query.order_by(func.random()).first()
+        if question is None:
+          return jsonify({
+            'success': True,
+            'questions': []
+          })
+      else:
+        abort(404, description='Inavlid Category ID. Please use a valid category ID')      
+
+    return jsonify({
+      'success' :True,
+      'question': question.format()
+    })
+
+
+
 
   '''
   @TODO: 

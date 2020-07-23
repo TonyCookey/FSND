@@ -132,7 +132,9 @@ DELETE '/questions'
 - Deletes a question in the database using the question ID
 - Request Arguments: Question ID, the question ID should be appended to the Requested URL i.e url/questions/question_id
 - Returns: A object with success set to true indicating the question has been deleted.
-{'success': True}
+{
+  'success': True
+  }
 
 
 POST '/questions'
@@ -143,7 +145,69 @@ POST '/questions'
 --Difficulty: Integer (1-5)
 --Category: Integer (valid category ID)
 - Returns: A object with success set to true indicating the question has been created.
-{'success': True}
+{
+  'success': True
+  }
+
+POST '/questions/search'
+- Search for questions using a search term in the request body
+- Request JSON:
+--search_term: String
+- Returns: an object of several values listed below
+--An array of questions that contain words that match the search term.The API search is case insensitive.
+--Total Questions used for pagination
+--currentCategory which is null by default
+--and success set to true
+{
+  "currentCategory": null,
+  "questions": [
+    {
+      "answer": "Maya Angelou",
+      "category": 4,
+      "difficulty": 2,
+      "id": 5,
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    }
+  ],
+  "success": true,
+  "totalQuestions": 1
+}
+
+GET '/categories/<int:category_id>/questions'
+- Returns questions in a particular category
+- Request Argument: <int:category_id> i.e /categories/1/questions
+--search_term: String
+- Returns:
+--An array of questions (with the category, difficulty and answers) that are in the requested category(category = 1).
+--and success set to true
+{
+  "questions": [
+    {
+      "answer": "Lake Victoria",
+      "category": 3,
+      "difficulty": 2,
+      "id": 13,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "The Palace of Versailles",
+      "category": 3,
+      "difficulty": 3,
+      "id": 14,
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    },
+    {
+      "answer": "Agra",
+      "category": 3,
+      "difficulty": 2,
+      "id": 15,
+      "question": "The Taj Mahal is located in which Indian city?"
+    }
+  ],
+  "success": true
+}
+
+
 ```
 
 ## Testing

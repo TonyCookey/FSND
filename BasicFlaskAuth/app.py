@@ -7,9 +7,9 @@ from urllib.request import urlopen
 
 app = Flask(__name__)
 
-AUTH0_DOMAIN = @TODO_REPLACE_WITH_YOUR_DOMAIN
+AUTH0_DOMAIN = tonycookey.us.auth0.com
 ALGORITHMS = ['RS256']
-API_AUDIENCE = @TODO_REPLACE_WITH_YOUR_API_AUDIENCE
+API_AUDIENCE = test
 
 
 class AuthError(Exception):
@@ -44,7 +44,7 @@ def get_token_auth_header():
     elif len(parts) > 2:
         raise AuthError({
             'code': 'invalid_header',
-            'description': 'Authorization header must be bearer token.'
+            'description': 'Authorization header must be a bearer token.'
         }, 401)
 
     token = parts[1]

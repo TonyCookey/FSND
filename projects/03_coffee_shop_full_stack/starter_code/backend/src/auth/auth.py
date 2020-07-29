@@ -124,8 +124,9 @@ def check_permissions(permission, payload):
 
 
 def verify_decode_jwt(token):
-
+    # get jsonurl for Auth0 using domain
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
+    # read and load jsonurl
     jwks = json.loads(jsonurl.read())
     # verify token using the jwt library
     unverified_header = jwt.get_unverified_header(token)
@@ -142,6 +143,7 @@ def verify_decode_jwt(token):
     for key in jwks['keys']:
         # check if the kid exists and is valid
         if key['kid'] == unverified_header['kid']:
+            # assign jwk keys to rsa_key dict
             rsa_key = {
                 'kid': key['kid'],
                 'kty': key['kty'],
@@ -153,6 +155,7 @@ def verify_decode_jwt(token):
     if rsa_key:
         # decode the jwt token and extract needed fields
         try:
+            # decode using jose jwt library
             payload = jwt.decode(
                 token,
                 rsa_key,
@@ -198,6 +201,8 @@ def verify_decode_jwt(token):
     it should use the check_permissions method validate claims and check the requested permission
     return the decorator which passes the decoded payload to the decorated method
 '''
+
+# define require auth decorator
 
 
 def requires_auth(permission=''):

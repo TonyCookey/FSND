@@ -23,11 +23,11 @@ def setup_db(app, database_path=database_path):
 Question
 
 '''
-class Question(db.Model):  
-  __tablename__ = 'questions'
+class Actor(db.Model):  
+  __tablename__ = 'actors'
 
   id = Column(Integer, primary_key=True)
-  question = Column(String)
+  title = Column(String)
   answer = Column(String)
   category = Column(String)
   difficulty = Column(Integer)

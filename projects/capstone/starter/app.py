@@ -19,6 +19,7 @@ def create_app(test_config=None):
       'API Description': 'API for managing Actors and Movies information',
       'Author': 'Tony Cookey'
     })
+
   # Get all Actors in the Database
   @app.route('/actors')
   def get_actors():
@@ -97,7 +98,75 @@ def create_app(test_config=None):
     return jsonify({
       'success': True,
       'actor' data
-    })   
+    })
+  # Delete actor using the actor id
+  @app.route('/actors/<int:id>', methods=['DELETE'])
+  def delete_actor(id):
+    actor = Actor.query.get(id)
+    if actor is None:
+      abort(404, description="Cannot delete, Actor does not exist")
+    actor.delete()
+    return jsonify({
+      'success':True,
+      'deleted': id
+    })
+  # Delete movie using the movie id
+  @app.route('/movies/<int:id>', methods=['DELETE'])
+  def delete_movie(id):
+    movie = Movie.query.get(id)
+    if movie is None:
+      abort(404, description="Cannot delete, movie does not exist")
+    movie.delete()
+    return jsonify({
+      'success':True,
+      'deleted': id
+    })  
+
+
+  # Define Error Handlers
+  # Error handler for 400
+  @app.errorhandler(400)
+  def unprocessable(error):
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": error.description
+    }), 400 
+
+  # Error hadler for 404
+  @app.errorhandler(404)
+  def unprocessable(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": error.description
+    }), 404
+
+  # Error handler for 405
+  @app.errorhandler(405)
+  def unprocessable(error):
+    return jsonify({
+      "success": False,
+      "error": 405,
+      "message": 'Method Not Allowed'
+    }), 405
+
+  # Error handler for 422
+  app.errorhandler(422)
+  def unprocessable(error):
+    return jsonify({
+      "success": False,
+      "error": 422,
+      "message": error.description
+    }), 422
+
+  @app.errorhandler(500)
+  def unprocessable(error):
+    return jsonify({
+      "success": False,
+      "error": 500,
+      "message": "Internal Server Error"
+    }), 500
 
   return app
 
